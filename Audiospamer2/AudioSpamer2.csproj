@@ -67,7 +67,6 @@
     <Compile Include="Effects\Echo1.cs" />
     <Compile Include="Effects\Echo2.cs" />
     <Compile Include="Effects\Echo3.cs" />
-    <Compile Include="Effects\Flanger.cs" />
     <Compile Include="Effects\Reverb.cs" />
     <Compile Include="Effects\Phaser.cs" />
     <Compile Include="Effects\LPF.cs" />
