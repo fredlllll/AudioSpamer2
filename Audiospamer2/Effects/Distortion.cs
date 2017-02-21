@@ -49,35 +49,35 @@ namespace AudioSpamer2.Effects
             Bass.BASS_FXSetParameters(ID, distortion);
         }
 
-        [stuff.EffectProp("Drive",0,5,0,100)]
+        [EffectPropertyDescription("Drive",0,5,0,100)]
         public float Drive
         {
             get { return distortion.fDrive; }
             set { distortion.fDrive = value; Update(); }
         }
 
-        [stuff.EffectProp("Dry Mix", -5, 5, 0, 100)]
+        [EffectPropertyDescription("Dry Mix", -5, 5, 0, 100)]
         public float Dry
         {
             get { return distortion.fDryMix; }
             set { distortion.fDryMix = value; Update(); }
         }
 
-        [stuff.EffectProp("Wet Mix", -5, 5, 0, 100)]
+        [EffectPropertyDescription("Wet Mix", -5, 5, 0, 100)]
         public float Wet
         {
             get { return distortion.fWetMix; }
             set { distortion.fWetMix = value; Update(); }
         }
 
-        [stuff.EffectProp("Feedback", -1, 1, 0, 100)]
+        [EffectPropertyDescription("Feedback", -1, 1, 0, 100)]
         public float Feedback
         {
             get { return distortion.fFeedback; }
             set { distortion.fFeedback = value; Update(); }
         }
 
-        [stuff.EffectProp("Volume", 0, 2, 0, 100)]
+        [EffectPropertyDescription("Volume", 0, 2, 0, 100)]
         public float Volume
         {
             get { return distortion.fVolume; }

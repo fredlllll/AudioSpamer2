@@ -49,42 +49,42 @@ namespace AudioSpamer2.Effects
             Bass.BASS_FXSetParameters(ID, phaser);
         }
 
-        [stuff.EffectProp("Dry Mix", -2, 2, 0)]
+        [EffectPropertyDescription("Dry Mix", -2, 2, 0)]
         public float Dry
         {
             get { return phaser.fDryMix; }
             set { phaser.fDryMix = value; Update(); }
         }
 
-        [stuff.EffectProp("Wet Mix", -2, 2, 0)]
+        [EffectPropertyDescription("Wet Mix", -2, 2, 0)]
         public float Wet
         {
             get { return phaser.fWetMix; }
             set { phaser.fWetMix = value; Update(); }
         }
 
-        [stuff.EffectProp("Feedback", -1, 1, 0)]
+        [EffectPropertyDescription("Feedback", -1, 1, 0)]
         public float Feedback
         {
             get { return phaser.fFeedback; }
             set { phaser.fFeedback = value; Update(); }
         }
 
-        [stuff.EffectProp("Frequency", 0, 1000, 0)]
+        [EffectPropertyDescription("Frequency", 0, 1000, 0)]
         public float Frequency
         {
             get { return phaser.fFreq; }
             set { phaser.fFreq = value; Update(); }
         }
 
-        [stuff.EffectProp("Range", 0, 10, 0)]
+        [EffectPropertyDescription("Range", 0, 10, 0)]
         public float Range
         {
             get { return phaser.fRange; }
             set { phaser.fRange = value; Update(); }
         }
 
-        [stuff.EffectProp("Rate", 0, 10, 0)]
+        [EffectPropertyDescription("Rate", 0, 10, 0)]
         public float Rate
         {
             get { return phaser.fRate; }

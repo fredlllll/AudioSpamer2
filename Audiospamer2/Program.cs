@@ -21,7 +21,7 @@ namespace AudioSpamer2
             bool initial = !System.IO.File.Exists(OptionsPath);
             Application.EnableVisualStyles();
             //Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1(initial,ini));
+            Application.Run(new MainForm(initial,ini));
         }
     }
 }

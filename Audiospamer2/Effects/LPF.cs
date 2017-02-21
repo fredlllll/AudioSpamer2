@@ -49,14 +49,14 @@ namespace AudioSpamer2.Effects
             Bass.BASS_FXSetParameters(ID, lpf);
         }
 
-        [stuff.EffectProp("Cut Off Frequency",1,10000,200,1)]
+        [EffectPropertyDescription("Cut Off Frequency",1,10000,200,1)]
         public float CutOff
         {
             get { return lpf.fCutOffFreq; }
             set { lpf.fCutOffFreq = value; Update(); }
         }
 
-        [stuff.EffectProp("Resonance", 0.01f, 10, 2,100)]
+        [EffectPropertyDescription("Resonance", 0.01f, 10, 2,100)]
         public float Resonance
         {
             get { return lpf.fResonance; }

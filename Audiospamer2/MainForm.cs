@@ -11,12 +11,13 @@ using AudioSpamer2.Effects;
 
 namespace AudioSpamer2
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        String[] bassreg = { "frederik.gelder@freenet.de", "2X16373726163723" };
-        StartOptions StartOptions1;
+        const string bassRegMail = "frederik.gelder@freenet.de";
+        const string bassRegCode = "2X16373726163723";
+        StartOptions spamerStartOptions;
 
-        ReplayMic rm;
+        ReplayMic replayMic;
 
         public SoundFile currentsound = null;
 
@@ -25,17 +26,17 @@ namespace AudioSpamer2
         System.Timers.Timer barUpdater = new System.Timers.Timer(100);
 
         EffectsControl effects;
-        public Form1(bool initialMode,IniFile ini)
+        public MainForm(bool initialMode,IniFile ini)
         {
             this.ini = ini;
             this.initialMode = initialMode;
             this.FormClosing += new FormClosingEventHandler(Form1_FormClosing);
 
-            BassNet.Registration(bassreg[0], bassreg[1]);
+            BassNet.Registration(bassRegMail, bassRegCode);
             InitializeComponent();
             if (System.IO.File.Exists("listbg.png"))
             {
-                this.listView1.BackgroundImage = new Bitmap("listbg.png");
+                this.lstSpams.BackgroundImage = new Bitmap("listbg.png");
             }
 
             AudioEffect[] aeffects = new AudioEffect[]{
@@ -45,7 +46,7 @@ namespace AudioSpamer2
                 new Echo1(),
                 new Echo2(),
                 new Echo3(),
-                new Flanger(),
+                //new Flanger(),
                 new LPF(),
                 new Phaser(),
                 new Reverb()
@@ -55,39 +56,39 @@ namespace AudioSpamer2
             this.Controls.Add(effects);
 
 
-            this.StartOptions1 = new AudioSpamer2.StartOptions(ini);
+            this.spamerStartOptions = new AudioSpamer2.StartOptions(ini);
             // 
             // StartOptions1
             // 
-            this.StartOptions1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.StartOptions1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.StartOptions1.Location = new System.Drawing.Point(0, 0);
-            this.StartOptions1.Margin = new System.Windows.Forms.Padding(1);
-            this.StartOptions1.Name = "StartOptions1";
-            this.StartOptions1.Size = new System.Drawing.Size(600, 25);
-            this.StartOptions1.TabIndex = 0;
-            this.StartOptions1.OKClick += new AudioSpamer2.StartOptions.voidHandler(this.StartOptions1_OKClick);
-            this.StartOptions1.TotallyHidden += new StartOptions.voidHandler(StartOptions1_TotallyHidden);
-            this.Controls.Add(this.StartOptions1);
-            StartOptions1.BringToFront();
+            this.spamerStartOptions.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.spamerStartOptions.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.spamerStartOptions.Location = new System.Drawing.Point(0, 0);
+            this.spamerStartOptions.Margin = new System.Windows.Forms.Padding(1);
+            this.spamerStartOptions.Name = "StartOptions1";
+            this.spamerStartOptions.Size = new System.Drawing.Size(600, 25);
+            this.spamerStartOptions.TabIndex = 0;
+            this.spamerStartOptions.OKClick += new AudioSpamer2.StartOptions.voidHandler(this.StartOptions1_OKClick);
+            this.spamerStartOptions.TotallyHidden += new StartOptions.voidHandler(StartOptions1_TotallyHidden);
+            this.Controls.Add(this.spamerStartOptions);
+            spamerStartOptions.BringToFront();
             resizeTimer.Elapsed += new System.Timers.ElapsedEventHandler(resizeTimer_Elapsed);
             this.Resize += new EventHandler(Form1_Resize);
 
             if (initialMode)
             {
                 oldsize = this.ClientSize;
-                this.ClientSize = StartOptions1.Size;
+                this.ClientSize = spamerStartOptions.Size;
             }
             else
             {
-                StartOptions1.Width = this.ClientSize.Width;
-                StartOptions1.Hide();
+                spamerStartOptions.Width = this.ClientSize.Width;
+                spamerStartOptions.Hide();
             }
 
-            Bass.BASS_Init(StartOptions1.SelectedOutput, Global.defaultSampleRate, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
-            rm = new ReplayMic(StartOptions1.SelectedInput);
-            pitchControls1.SetSoundChannel(rm.SoundChannel);
-            pitchControls1.trackBar1.Minimum = 100;
+            Bass.BASS_Init(spamerStartOptions.SelectedOutput, Global.defaultSampleRate, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
+            replayMic = new ReplayMic(spamerStartOptions.SelectedInput);
+            pitchControlsMicrophone.SetSoundChannel(replayMic.SoundChannel);
+            pitchControlsMicrophone.trackBar1.Minimum = 100;
 
             //ini input from here
             int temp = 0;
@@ -95,19 +96,19 @@ namespace AudioSpamer2
             {
                 temp = 0;
             }
-            hScrollBar1.Value = temp;
+            volumeMicrophone.Value = temp;
             if (!int.TryParse(ini.GetProperty("SpamVolume"), out temp))
             {
-                temp = hScrollBar2.Maximum-9;
+                temp = volumeSpam.Maximum-9;
             }
-            hScrollBar2.Value = temp;
+            volumeSpam.Value = temp;
 
             //rest
             barUpdater.Elapsed += new System.Timers.ElapsedEventHandler(barUpdater_Elapsed);
             barUpdater.Start();
 
-            pitchControls1.LoadFrom(ini);
-            pitchControls2.LoadFrom(ini);
+            pitchControlsMicrophone.LoadFrom(ini);
+            pitchControlsSpam.LoadFrom(ini);
 
             try
             {
@@ -121,7 +122,7 @@ namespace AudioSpamer2
                         {
                             ListViewItem l = new ListViewItem(sa[0]);
                             l.Tag = sa[1];
-                            listView1.Items.Add(l);
+                            lstSpams.Items.Add(l);
                         }
                     }
                     catch
@@ -143,24 +144,33 @@ namespace AudioSpamer2
 
         void apply()
         {
-            hScrollBar1_Scroll(null, null);
-            hScrollBar2_Scroll(null, null);
+            volumeMicrophone_Scroll(null, null);
+            volumeSpam_Scroll(null, null);
         }
 
         void barUpdater_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if (currentsound != null)
+            if(InvokeRequired)
             {
-                bar.Value = (int)(bar.Maximum * currentsound.sc.PercentagePlayed);
+                barUpdater_Elapsed();
+                return;
+            }
+            barUpdater_Elapsed();
+        }
+
+        void barUpdater_Elapsed() {
+            if(currentsound != null)
+            {
+                timeline.Value = (int)(timeline.Maximum * currentsound.sc.PercentagePlayed);
                 currentsound.CheckForEndAndReplay();
             }
         }
 
-        void bar_Scroll(object sender, System.EventArgs e)
+        void timeline_Scroll(object sender, System.EventArgs e)
         {
             if (currentsound != null)
             {
-                currentsound.sc.StreamPosition = (long)(((double)bar.Value / bar.Maximum) * currentsound.sc.StreamLength);
+                currentsound.sc.StreamPosition = (long)(((double)timeline.Value / timeline.Maximum) * currentsound.sc.StreamLength);
             }
         }
 
@@ -168,8 +178,8 @@ namespace AudioSpamer2
 
         void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            pitchControls1.Save(ini);
-            pitchControls2.Save(ini);
+            pitchControlsMicrophone.Save(ini);
+            pitchControlsSpam.Save(ini);
 
             //save list
             
@@ -178,7 +188,7 @@ namespace AudioSpamer2
                 System.IO.File.Delete(spamfile);
             }
             System.IO.StreamWriter sw = new System.IO.StreamWriter(System.IO.File.Create(spamfile));
-            foreach (ListViewItem item in listView1.Items)
+            foreach (ListViewItem item in lstSpams.Items)
             {
                 sw.WriteLine(item.Text + "|" + item.Tag.ToString());
             }
@@ -189,7 +199,7 @@ namespace AudioSpamer2
 
         void Form1_Resize(object sender, EventArgs e)
         {
-            StartOptions1.Width = this.ClientSize.Width;
+            spamerStartOptions.Width = this.ClientSize.Width;
         }
 
         void resizeTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -224,13 +234,13 @@ namespace AudioSpamer2
 
         void StartOptions1_OKClick()
         {
-            if (StartOptions1.micbox.SelectedItem != null)
+            if (spamerStartOptions.micbox.SelectedItem != null)
             {
-                ini.SetProperty("Input", StartOptions1.micbox.SelectedItem.ToString());
+                ini.SetProperty("Input", spamerStartOptions.micbox.SelectedItem.ToString());
             }
-            if (StartOptions1.soundbox.SelectedItem != null)
+            if (spamerStartOptions.soundbox.SelectedItem != null)
             {
-                ini.SetProperty("Output", StartOptions1.soundbox.SelectedItem.ToString());
+                ini.SetProperty("Output", spamerStartOptions.soundbox.SelectedItem.ToString());
             }
             ini.Flush();
 
@@ -241,12 +251,12 @@ namespace AudioSpamer2
             }
 
             Bass.BASS_Free();
-            Global.outputDeviceIndex = StartOptions1.SelectedOutput;
+            Global.outputDeviceIndex = spamerStartOptions.SelectedOutput;
             Bass.BASS_Init(Global.outputDeviceIndex, Global.defaultSampleRate, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
-            rm.STOP();
-            Global.inputDeviceIndex = StartOptions1.SelectedInput;
-            rm = new ReplayMic(Global.inputDeviceIndex);
-            pitchControls1.SetSoundChannel(rm.SoundChannel);
+            replayMic.STOP();
+            Global.inputDeviceIndex = spamerStartOptions.SelectedInput;
+            replayMic = new ReplayMic(Global.inputDeviceIndex);
+            pitchControlsMicrophone.SetSoundChannel(replayMic.SoundChannel);
 
             if (currentsound != null)
             {
@@ -256,23 +266,23 @@ namespace AudioSpamer2
             apply();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnSoundOptions_Click(object sender, EventArgs e)
         {
-            StartOptions1.Show();
+            spamerStartOptions.Show();
         }
 
-        private void hScrollBar1_Scroll(object sender, ScrollEventArgs e)
+        private void volumeMicrophone_Scroll(object sender, ScrollEventArgs e)
         {
-            ini.SetProperty("InputVolume", hScrollBar1.Value.ToString());
-            rm.Volume = hScrollBar1.Value / 100.0f;
+            ini.SetProperty("InputVolume", volumeMicrophone.Value.ToString());
+            replayMic.Volume = volumeMicrophone.Value / 100.0f;
         }
 
-        private void hScrollBar2_Scroll(object sender, ScrollEventArgs e)
+        private void volumeSpam_Scroll(object sender, ScrollEventArgs e)
         {
-            ini.SetProperty("SpamVolume", hScrollBar2.Value.ToString());
+            ini.SetProperty("SpamVolume", volumeSpam.Value.ToString());
             if (currentsound != null)
             {
-                currentsound.sc.Volume = hScrollBar2.Value / 100.0f;
+                currentsound.sc.Volume = volumeSpam.Value / 100.0f;
             }
         }
 
@@ -283,17 +293,17 @@ namespace AudioSpamer2
                 if (currentsound.sc.playing)
                 {
                     currentsound.sc.Pause();
-                    buttonPlayPause.Text = "Play";
+                    btnPlayPause.Text = "Play";
                 }
                 else
                 {
                     currentsound.sc.Play();
-                    buttonPlayPause.Text = "Pause";
+                    btnPlayPause.Text = "Pause";
                 }
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void btnAddNewSpam_Click(object sender, EventArgs e)
         {
             String[] sa = Un4seen.Bass.Bass.SupportedStreamExtensions.Split(';');
             ofd.Filter = "";
@@ -312,13 +322,13 @@ namespace AudioSpamer2
             {
                 ListViewItem l = new ListViewItem(ofd.SafeFileName);
                 l.Tag = ofd.FileName;
-                listView1.Items.Add(l);
+                lstSpams.Items.Add(l);
             }
         }
 
-        void listView1_ItemActivate(object sender, System.EventArgs e)
+        void lstSpams_ItemActivate(object sender, System.EventArgs e)
         {
-            String path = (String)listView1.SelectedItems[0].Tag;
+            String path = (String)lstSpams.SelectedItems[0].Tag;
             SetCurrentSound(new SoundFile(path));
             /*bool playMarks = false;
             bool reversed = false;
@@ -361,8 +371,8 @@ namespace AudioSpamer2
             currentsound = file;
             handler = new SoundFile.SoundChannelChangedHandler(currentsound_SoundChannelChanged);
             currentsound.SoundChannelChanged += handler;
-            pitchControls2.SetSoundChannel(currentsound.sc);
-            hScrollBar2_Scroll(null, null);
+            pitchControlsSpam.SetSoundChannel(currentsound.sc);
+            volumeSpam_Scroll(null, null);
             buttonPlayPause_Click(null, null);
 
 
@@ -378,16 +388,16 @@ namespace AudioSpamer2
             }
             currentsound.B = MarkB;
             float percA = currentsound.A / (float)currentsound.sc.StreamLength;
-            bar.A = (int)(percA * bar.Maximum);
+            timeline.A = (int)(percA * timeline.Maximum);
             float percB = currentsound.B / (float)currentsound.sc.StreamLength;
-            bar.B = (int)(percB * bar.Maximum);
+            timeline.B = (int)(percB * timeline.Maximum);
 
             if (MarkA == MarkB)
             {
                 MarkA = 0;
-                bar.A = 0;
+                timeline.A = 0;
                 MarkB = currentsound.sc.StreamLength;
-                bar.B = bar.Maximum;
+                timeline.B = timeline.Maximum;
             }
             if (playMarks)
             {
@@ -398,17 +408,17 @@ namespace AudioSpamer2
                 currentsound.Reverse();
             }
             currentsound.sc.StreamPosition = pos;
-            currentsound.Loop = checkBox1.Checked;
-            bar.Refresh();
+            currentsound.Loop = chkLoop.Checked;
+            timeline.Refresh();
             effects.ReApply();
         }
 
         void currentsound_SoundChannelChanged(SoundChannel c)
         {
-            pitchControls2.SetSoundChannel(c);
+            pitchControlsSpam.SetSoundChannel(c);
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void btnReverse_Click(object sender, EventArgs e)
         {
             if (currentsound != null)
             {
@@ -417,40 +427,40 @@ namespace AudioSpamer2
         }
 
         Int64 MarkA, MarkB;
-        private void button5_Click(object sender, EventArgs e)
+        private void btnSetA_Click(object sender, EventArgs e)
         {
             if (currentsound != null)
             {
                 MarkA = currentsound.sc.StreamPosition;
                 currentsound.A = MarkA;
-                bar.A = bar.Value;
-                bar.Refresh();
+                timeline.A = timeline.Value;
+                timeline.Refresh();
             }
         }
 
-        private void button6_Click(object sender, EventArgs e)
+        private void btnSetB_Click(object sender, EventArgs e)
         {
             if (currentsound != null)
             {
                 MarkB = currentsound.sc.StreamPosition;
                 currentsound.B = MarkB;
-                bar.B = bar.Value;
-                bar.Refresh();
+                timeline.B = timeline.Value;
+                timeline.Refresh();
             }
         }
 
-        private void button7_Click(object sender, EventArgs e)
+        private void btnPlayAToB_Click(object sender, EventArgs e)
         {
             if (currentsound != null)
             {
                 if (currentsound.playMarks)
                 {
-                    button7.Text = "Play A-B";
+                    btnPlayAToB.Text = "Play A-B";
                     currentsound.StopPlayingMarks();
                 }
                 else
                 {
-                    button7.Text = "Stop A-B";
+                    btnPlayAToB.Text = "Stop A-B";
                     currentsound.A = MarkA;
                     currentsound.B = MarkB;
                     currentsound.PlayMarks();
@@ -458,23 +468,23 @@ namespace AudioSpamer2
             }
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void btnRemoveSelected_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count > 0)
+            if (lstSpams.SelectedItems.Count > 0)
             {
-                listView1.Items.Remove(listView1.SelectedItems[0]);
+                lstSpams.Items.Remove(lstSpams.SelectedItems[0]);
             }
         }
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        private void chkLoop_CheckedChanged(object sender, EventArgs e)
         {
             if (currentsound != null)
             {
-                currentsound.Loop = checkBox1.Checked;
+                currentsound.Loop = chkLoop.Checked;
             }
         }
 
-        private void button8_Click(object sender, EventArgs e)
+        private void btnEffects_Click(object sender, EventArgs e)
         {
             effects.Show();
         }

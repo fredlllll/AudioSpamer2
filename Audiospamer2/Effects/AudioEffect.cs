@@ -11,12 +11,12 @@ namespace AudioSpamer2.Effects
         public abstract void ApplyToSoundFile(SoundFile sf);
         public abstract void RemoveFromSoundFile();
         public abstract void Update();
-        public abstract String Name
+        public abstract string Name
         {
             get;
         }
 
         public TabPage Page = null;
-        public bool enabled = false;
+        public bool Enabled = false;
     }
 }

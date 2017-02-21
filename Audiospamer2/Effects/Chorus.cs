@@ -49,42 +49,42 @@ namespace AudioSpamer2.Effects
             Bass.BASS_FXSetParameters(ID, chorus);
         }
 
-        [stuff.EffectProp("Dry Mix", -2, 2, 0)]
+        [EffectPropertyDescription("Dry Mix", -2, 2, 0)]
         public float Dry
         {
             get { return chorus.fDryMix; }
             set { chorus.fDryMix = value; Update(); }
         }
 
-        [stuff.EffectProp("Wet Mix", -2, 2, 0)]
+        [EffectPropertyDescription("Wet Mix", -2, 2, 0)]
         public float Wet
         {
             get { return chorus.fWetMix; }
             set { chorus.fWetMix = value; Update(); }
         }
 
-        [stuff.EffectProp("Feedback", -1, 1, 0)]
+        [EffectPropertyDescription("Feedback", -1, 1, 0)]
         public float Feedback
         {
             get { return chorus.fFeedback; }
             set { chorus.fFeedback = value; Update(); }
         }
 
-        [stuff.EffectProp("Rate", 0, 10, 0)]
+        [EffectPropertyDescription("Rate", 0, 10, 0)]
         public float Rate
         {
             get { return chorus.fRate; }
             set { chorus.fRate = value; Update(); }
         }
 
-        [stuff.EffectProp("Min Sweep", 0, 6000, 0)]
+        [EffectPropertyDescription("Min Sweep", 0, 6000, 0)]
         public float MinSweep
         {
             get { return chorus.fMinSweep; }
             set { chorus.fMinSweep = value; Update(); }
         }
 
-        [stuff.EffectProp("Max Sweep", 0, 6000, 0)]
+        [EffectPropertyDescription("Max Sweep", 0, 6000, 0)]
         public float MaxSweep
         {
             get { return chorus.fMaxSweep; }

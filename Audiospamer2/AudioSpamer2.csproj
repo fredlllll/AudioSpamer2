@@ -70,14 +70,14 @@
     <Compile Include="Effects\Reverb.cs" />
     <Compile Include="Effects\Phaser.cs" />
     <Compile Include="Effects\LPF.cs" />
-    <Compile Include="Effects\stuff\AudioEffect.cs" />
+    <Compile Include="Effects\AudioEffect.cs" />
     <Compile Include="Effects\Distortion.cs" />
-    <Compile Include="Effects\stuff\EffectProp.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="Effects\EffectPropertyDescription.cs" />
+    <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Global.cs" />
     <Compile Include="IniFile.cs" />
@@ -96,6 +96,11 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="ReplayMic.cs" />
     <Compile Include="SoundChannel.cs" />
     <Compile Include="SoundFile.cs" />
@@ -111,8 +116,8 @@
     <EmbeddedResource Include="EffectsControl.resx">
       <DependentUpon>EffectsControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LabeledTrackBar.resx">
       <DependentUpon>LabeledTrackBar.cs</DependentUpon>
@@ -122,14 +127,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <EmbeddedResource Include="StartOptions.resx">
       <DependentUpon>StartOptions.cs</DependentUpon>
     </EmbeddedResource>
@@ -147,6 +147,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="..\Graphics\EffectsBG.png">
+      <Link>Resources\EffectsBG.png</Link>
+    </Resource>
+    <Resource Include="..\Graphics\ListBG.png">
+      <Link>Resources\ListBG.png</Link>
+    </Resource>
     <Content Include="Audio.ico" />
     <Content Include="bass.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -184,20 +190,18 @@
     <Content Include="README.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Resources\searching.png">
+    <Content Include="Resources\searching.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\success.png">
+    </Content>
+    <Content Include="Resources\success.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\fail.png">
+    </Content>
+    <Content Include="Resources\fail.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
     <Content Include="version.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Resources\EffectsBG.png" />
-    <None Include="Resources\ListBG.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

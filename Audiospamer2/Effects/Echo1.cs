@@ -49,14 +49,14 @@ namespace AudioSpamer2.Effects
             Bass.BASS_FXSetParameters(ID, echo);
         }
 
-        [stuff.EffectProp("Level", 0, 100, 0)]
+        [EffectPropertyDescription("Level", 0, 100, 0)]
         public float Level
         {
             get { return echo.fLevel; }
             set { echo.fLevel = value; Update(); }
         }
 
-        [stuff.EffectProp("Delay", 1200, 30000, 1200,1,true)]
+        [EffectPropertyDescription("Delay", 1200, 30000, 1200,1,true)]
         public int Delay
         {
             get { return echo.lDelay; }

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Reflection;
-using AudioSpamer2.Effects.stuff;
 using AudioSpamer2.Effects;
 
 namespace AudioSpamer2
@@ -24,9 +23,9 @@ namespace AudioSpamer2
             showTimer.Elapsed += new System.Timers.ElapsedEventHandler(showTimer_Elapsed);
         }
 
-        Form1 f;
+        MainForm f;
         AudioEffect[] effects;
-        public void SetEffectsAndForm1(Form1 f, AudioSpamer2.Effects.AudioEffect[] effects)
+        public void SetEffectsAndForm1(MainForm f, AudioSpamer2.Effects.AudioEffect[] effects)
         {
             this.f = f;
             this.effects = effects;
@@ -39,29 +38,29 @@ namespace AudioSpamer2
                 PropertyInfo[] props = type.GetProperties();
                 for (int j = 0; j < props.Length; j++)
                 {
-                    object[] oa = props[j].GetCustomAttributes(typeof(AudioSpamer2.Effects.stuff.EffectProp),false);
+                    object[] oa = props[j].GetCustomAttributes(typeof(AudioSpamer2.Effects.EffectPropertyDescription),false);
                     if (oa.Length > 0)
                     {
-                        EffectProp ep = (EffectProp)oa[0];
+                        EffectPropertyDescription ep = (EffectPropertyDescription)oa[0];
                         TrackBar bar = new TrackBar();
-                        bar.Minimum = (int)(ep.minValue * ep.resolution);
-                        bar.Maximum = (int)(ep.maxValue * ep.resolution);
-                        bar.Value = (int)(ep.defaultValue * ep.resolution);
+                        bar.Minimum = (int)(ep.MinValue * ep.Resolution);
+                        bar.Maximum = (int)(ep.MaxValue * ep.Resolution);
+                        bar.Value = (int)(ep.DefaultValue * ep.Resolution);
                         bar.Width = 230;
                         Label l = new Label();
                         l.AutoSize = true;
-                        l.Text = ep.Label + ": " + ep.defaultValue;
+                        l.Text = ep.Label + ": " + ep.DefaultValue;
                         bar.Tag = new object[] { effects[i], props[j], ep, l };
                         EventHandler eh = new EventHandler(delegate(object sender,EventArgs args)
                         {
                             TrackBar tb = (TrackBar)sender;
-                            EffectProp eprop = (EffectProp)((object[])tb.Tag)[2];
-                            float val = tb.Value / (float)eprop.resolution;
+                            EffectPropertyDescription eprop = (EffectPropertyDescription)((object[])tb.Tag)[2];
+                            float val = tb.Value / (float)eprop.Resolution;
                             Label lab = (Label)((object[])tb.Tag)[3];
                             lab.Text = eprop.Label + ": " + val;
                             PropertyInfo propinfo = (PropertyInfo)((object[])tb.Tag)[1];
                             AudioEffect ae = (AudioEffect)((object[])tb.Tag)[0];
-                            if (eprop.isInt)
+                            if (eprop.IsInteger)
                             {
                                 propinfo.SetValue(ae, (int)val, null);
                             }
@@ -77,8 +76,8 @@ namespace AudioSpamer2
                             if (args.Button == System.Windows.Forms.MouseButtons.Middle)
                             {
                                 TrackBar tb = (TrackBar)sender;
-                                EffectProp eprop = (EffectProp)((object[])tb.Tag)[2];
-                                tb.Value = (int)eprop.defaultValue;
+                                EffectPropertyDescription eprop = (EffectPropertyDescription)((object[])tb.Tag)[2];
+                                tb.Value = (int)eprop.DefaultValue;
                             }
                         });
                         l.Left = 3;
@@ -105,7 +104,7 @@ namespace AudioSpamer2
         {
             CheckBox cb = (CheckBox)sender;
             AudioSpamer2.Effects.AudioEffect effect = (AudioSpamer2.Effects.AudioEffect)cb.Tag;
-            effect.enabled = cb.Checked;
+            effect.Enabled = cb.Checked;
             if (cb.Checked)
             {
                 this.tabControl1.TabPages.Add(effect.Page);
@@ -169,7 +168,7 @@ namespace AudioSpamer2
         {
             for (int i = 0; i < effects.Length; i++)
             {
-                if (effects[i].enabled && f.currentsound != null)
+                if (effects[i].Enabled && f.currentsound != null)
                 {
                     effects[i].ApplyToSoundFile(f.currentsound);
                 }

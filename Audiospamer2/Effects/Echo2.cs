@@ -49,28 +49,28 @@ namespace AudioSpamer2.Effects
             Bass.BASS_FXSetParameters(ID, echo2);
         }
 
-        [stuff.EffectProp("Dry Mix", -2, 2, 0)]
+        [EffectPropertyDescription("Dry Mix", -2, 2, 0)]
         public float Dry
         {
             get { return echo2.fDryMix; }
             set { echo2.fDryMix = value; Update(); }
         }
 
-        [stuff.EffectProp("Wet Mix", -2, 2, 0)]
+        [EffectPropertyDescription("Wet Mix", -2, 2, 0)]
         public float Wet
         {
             get { return echo2.fWetMix; }
             set { echo2.fWetMix = value; Update(); }
         }
 
-        [stuff.EffectProp("Feedback", -1, 1, 0)]
+        [EffectPropertyDescription("Feedback", -1, 1, 0)]
         public float Feedback
         {
             get { return echo2.fFeedback; }
             set { echo2.fFeedback = value; Update(); }
         }
 
-        [stuff.EffectProp("Delay", 0, 6, 0)]
+        [EffectPropertyDescription("Delay", 0, 6, 0)]
         public float Delay
         {
             get { return echo2.fDelay; }
