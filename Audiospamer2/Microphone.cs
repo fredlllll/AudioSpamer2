@@ -16,7 +16,7 @@ namespace AudioSpamer2
             this.device = device;
             rpro = new RECORDPROC(MyRecording);
             Bass.BASS_RecordInit(device);
-            ID = Bass.BASS_RecordStart(Global.defaultSampleRate*2, 1, BASSFlag.BASS_DEFAULT, rpro, IntPtr.Zero);
+            ID = Bass.BASS_RecordStart(Global.DefaultSampleRate*2, 1, BASSFlag.BASS_DEFAULT, rpro, IntPtr.Zero);
         }
 
         void Global_PlayFreqChanged(int i)

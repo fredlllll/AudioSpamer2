@@ -5,10 +5,10 @@ using System.Text;
 
 namespace AudioSpamer2
 {
-    public class Global
+    public static class Global
     {
-        public static int defaultSampleRate = 44100;
-        public static int outputDeviceIndex = -1;
-        public static int inputDeviceIndex = -1;
+        public static int DefaultSampleRate { get; set; } = 44100;
+        public static int OutputDeviceIndex { get; set; } = -1;
+        public static int InputDeviceIndex { get; set; } = -1;
     }
 }

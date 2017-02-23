@@ -17,29 +17,29 @@ namespace AudioSpamer2.Effects
             echo3 = new BASS_BFX_ECHO3();
         }
 
-        SoundFile sf=null;
-        public override void ApplyToSoundFile(SoundFile sf)
+        AudioClip sf=null;
+        public override void ApplyToSoundFile(AudioClip sf)
         {
             this.sf = sf;
-            ID = Bass.BASS_ChannelSetFX(sf.sc.ID, BASSFXType.BASS_FX_BFX_ECHO3, 1);
-            handler = new SoundFile.SoundChannelChangedHandler(sf_SoundChannelChanged);
-            sf.SoundChannelChanged += handler;
+            ID = Bass.BASS_ChannelSetFX(sf.AudioStream.StreamHandle, BASSFXType.BASS_FX_BFX_ECHO3, 1);
+            handler = new AudioClip.AudioChannelChangedHandler(sf_SoundChannelChanged);
+            sf.AudioStreamChanged += handler;
             Update();
         }
 
-        SoundFile.SoundChannelChangedHandler handler;
+        AudioClip.AudioChannelChangedHandler handler;
 
-        void sf_SoundChannelChanged(SoundChannel c)
+        void sf_SoundChannelChanged(AudioStream c)
         {
-            ID = Bass.BASS_ChannelSetFX(c.ID, BASSFXType.BASS_FX_BFX_ECHO3, 1);
+            ID = Bass.BASS_ChannelSetFX(c.StreamHandle, BASSFXType.BASS_FX_BFX_ECHO3, 1);
         }
 
         public override void RemoveFromSoundFile()
         {
             if (sf != null)
             {
-                Bass.BASS_ChannelRemoveFX(sf.sc.ID, ID);
-                sf.SoundChannelChanged -= handler;
+                Bass.BASS_ChannelRemoveFX(sf.AudioStream.StreamHandle, ID);
+                sf.AudioStreamChanged -= handler;
                 sf = null;
             }
         }

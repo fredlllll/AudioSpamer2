@@ -16,9 +16,9 @@ namespace AudioSpamer2
         {
             rpro = new RECORDPROC(MyRecording);
             Bass.BASS_RecordInit(device);
-            MicID = Bass.BASS_RecordStart(Global.defaultSampleRate, 1, BASSFlag.BASS_DEFAULT, rpro, IntPtr.Zero);
+            MicID = Bass.BASS_RecordStart(Global.DefaultSampleRate, 1, BASSFlag.BASS_DEFAULT, rpro, IntPtr.Zero);
 
-            nowDecoding = Bass.BASS_StreamCreatePush(Global.defaultSampleRate, 1, BASSFlag.BASS_STREAM_DECODE, IntPtr.Zero);
+            nowDecoding = Bass.BASS_StreamCreatePush(Global.DefaultSampleRate, 1, BASSFlag.BASS_STREAM_DECODE, IntPtr.Zero);
             PlayID = Un4seen.Bass.AddOn.Fx.BassFx.BASS_FX_TempoCreate(nowDecoding, BASSFlag.BASS_DEFAULT);
 
             Bass.BASS_ChannelPlay(nowDecoding, false);
@@ -48,9 +48,9 @@ namespace AudioSpamer2
             set { Bass.BASS_ChannelSetAttribute(PlayID, BASSAttribute.BASS_ATTRIB_VOL, value); }
         }
 
-        public SoundChannel SoundChannel
+        public AudioStream SoundChannel
         {
-            get { return new SoundChannel(PlayID); }
+            get { return new AudioStream(PlayID); }
         }
     }
 }

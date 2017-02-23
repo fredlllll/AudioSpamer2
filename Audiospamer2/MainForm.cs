@@ -19,7 +19,13 @@ namespace AudioSpamer2
 
         ReplayMic replayMic;
 
-        public SoundFile currentsound = null;
+        public AudioSpamerCore AudioSpamerCore
+        {
+            get;
+            set;
+        } = new AudioSpamerCore();
+
+        public AudioClip currentsound = null;
 
         Size oldsize;
         IniFile ini;
@@ -85,7 +91,7 @@ namespace AudioSpamer2
                 spamerStartOptions.Hide();
             }
 
-            Bass.BASS_Init(spamerStartOptions.SelectedOutput, Global.defaultSampleRate, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
+            Bass.BASS_Init(spamerStartOptions.SelectedOutput, Global.DefaultSampleRate, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
             replayMic = new ReplayMic(spamerStartOptions.SelectedInput);
             pitchControlsMicrophone.SetSoundChannel(replayMic.SoundChannel);
             pitchControlsMicrophone.trackBar1.Minimum = 100;
@@ -161,7 +167,7 @@ namespace AudioSpamer2
         void barUpdater_Elapsed() {
             if(currentsound != null)
             {
-                timeline.Value = (int)(timeline.Maximum * currentsound.sc.PercentagePlayed);
+                timeline.Value = (int)(timeline.Maximum * currentsound.AudioStream.PercentagePlayed);
                 currentsound.CheckForEndAndReplay();
             }
         }
@@ -170,7 +176,7 @@ namespace AudioSpamer2
         {
             if (currentsound != null)
             {
-                currentsound.sc.StreamPosition = (long)(((double)timeline.Value / timeline.Maximum) * currentsound.sc.StreamLength);
+                currentsound.AudioStream.Position = (long)(((double)timeline.Value / timeline.Maximum) * currentsound.AudioStream.Length);
             }
         }
 
@@ -247,20 +253,20 @@ namespace AudioSpamer2
             long pos = 0;
             if (currentsound != null)
             {
-                pos = currentsound.sc.StreamPosition;
+                pos = currentsound.AudioStream.Position;
             }
 
             Bass.BASS_Free();
-            Global.outputDeviceIndex = spamerStartOptions.SelectedOutput;
-            Bass.BASS_Init(Global.outputDeviceIndex, Global.defaultSampleRate, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
+            Global.OutputDeviceIndex = spamerStartOptions.SelectedOutput;
+            Bass.BASS_Init(Global.OutputDeviceIndex, Global.DefaultSampleRate, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
             replayMic.STOP();
-            Global.inputDeviceIndex = spamerStartOptions.SelectedInput;
-            replayMic = new ReplayMic(Global.inputDeviceIndex);
+            Global.InputDeviceIndex = spamerStartOptions.SelectedInput;
+            replayMic = new ReplayMic(Global.InputDeviceIndex);
             pitchControlsMicrophone.SetSoundChannel(replayMic.SoundChannel);
 
             if (currentsound != null)
             {
-                SetCurrentSound(new SoundFile(currentsound.path), pos);
+                SetCurrentSound(new AudioClip(currentsound.Path), pos);
             }
 
             apply();
@@ -282,7 +288,7 @@ namespace AudioSpamer2
             ini.SetProperty("SpamVolume", volumeSpam.Value.ToString());
             if (currentsound != null)
             {
-                currentsound.sc.Volume = volumeSpam.Value / 100.0f;
+                currentsound.AudioStream.Volume = volumeSpam.Value / 100.0f;
             }
         }
 
@@ -290,14 +296,14 @@ namespace AudioSpamer2
         {
             if (currentsound != null)
             {
-                if (currentsound.sc.playing)
+                if (currentsound.AudioStream.IsPlaying)
                 {
-                    currentsound.sc.Pause();
+                    currentsound.AudioStream.Pause();
                     btnPlayPause.Text = "Play";
                 }
                 else
                 {
-                    currentsound.sc.Play();
+                    currentsound.AudioStream.Play();
                     btnPlayPause.Text = "Pause";
                 }
             }
@@ -329,7 +335,7 @@ namespace AudioSpamer2
         void lstSpams_ItemActivate(object sender, System.EventArgs e)
         {
             String path = (String)lstSpams.SelectedItems[0].Tag;
-            SetCurrentSound(new SoundFile(path));
+            SetCurrentSound(new AudioClip(path));
             /*bool playMarks = false;
             bool reversed = false;
             if (currentsound != null)
@@ -355,65 +361,64 @@ namespace AudioSpamer2
             }*/
         }
 
-        SoundFile.SoundChannelChangedHandler handler;
-        public void SetCurrentSound(SoundFile file,long pos = 0)
+        AudioClip.AudioChannelChangedHandler handler;
+        public void SetCurrentSound(AudioClip file,long pos = 0)
         {
             bool playMarks = false;
             bool reversed = false;
 
             if (currentsound != null)
             {
-                playMarks = currentsound.playMarks;
-                reversed = currentsound.reversed;
-                currentsound.Free();
-                currentsound.SoundChannelChanged -= handler;
+                playMarks = currentsound.IsPlayingBetweenMarks;
+                reversed = currentsound.IsReversed;
+                currentsound.AudioStreamChanged -= handler;
             }
             currentsound = file;
-            handler = new SoundFile.SoundChannelChangedHandler(currentsound_SoundChannelChanged);
-            currentsound.SoundChannelChanged += handler;
-            pitchControlsSpam.SetSoundChannel(currentsound.sc);
+            handler = new AudioClip.AudioChannelChangedHandler(currentsound_SoundChannelChanged);
+            currentsound.AudioStreamChanged += handler;
+            pitchControlsSpam.SetSoundChannel(currentsound.AudioStream);
             volumeSpam_Scroll(null, null);
             buttonPlayPause_Click(null, null);
 
 
 
-            if (MarkA > currentsound.sc.StreamLength)
+            if (MarkA > currentsound.AudioStream.Length)
             {
-                MarkA = currentsound.sc.StreamLength;
+                MarkA = currentsound.AudioStream.Length;
             }
-            currentsound.A = MarkA;
-            if (MarkB > currentsound.sc.StreamLength)
+            currentsound.MarkA = MarkA;
+            if (MarkB > currentsound.AudioStream.Length)
             {
-                MarkB = currentsound.sc.StreamLength;
+                MarkB = currentsound.AudioStream.Length;
             }
-            currentsound.B = MarkB;
-            float percA = currentsound.A / (float)currentsound.sc.StreamLength;
+            currentsound.MarkB = MarkB;
+            float percA = currentsound.MarkA / (float)currentsound.AudioStream.Length;
             timeline.A = (int)(percA * timeline.Maximum);
-            float percB = currentsound.B / (float)currentsound.sc.StreamLength;
+            float percB = currentsound.MarkB / (float)currentsound.AudioStream.Length;
             timeline.B = (int)(percB * timeline.Maximum);
 
             if (MarkA == MarkB)
             {
                 MarkA = 0;
                 timeline.A = 0;
-                MarkB = currentsound.sc.StreamLength;
+                MarkB = currentsound.AudioStream.Length;
                 timeline.B = timeline.Maximum;
             }
             if (playMarks)
             {
-                currentsound.PlayMarks();
+                currentsound.PlayBetweenMarks();
             }
             if (reversed)
             {
                 currentsound.Reverse();
             }
-            currentsound.sc.StreamPosition = pos;
+            currentsound.AudioStream.Position = pos;
             currentsound.Loop = chkLoop.Checked;
             timeline.Refresh();
             effects.ReApply();
         }
 
-        void currentsound_SoundChannelChanged(SoundChannel c)
+        void currentsound_SoundChannelChanged(AudioStream c)
         {
             pitchControlsSpam.SetSoundChannel(c);
         }
@@ -431,8 +436,8 @@ namespace AudioSpamer2
         {
             if (currentsound != null)
             {
-                MarkA = currentsound.sc.StreamPosition;
-                currentsound.A = MarkA;
+                MarkA = currentsound.AudioStream.Position;
+                currentsound.MarkA = MarkA;
                 timeline.A = timeline.Value;
                 timeline.Refresh();
             }
@@ -442,8 +447,8 @@ namespace AudioSpamer2
         {
             if (currentsound != null)
             {
-                MarkB = currentsound.sc.StreamPosition;
-                currentsound.B = MarkB;
+                MarkB = currentsound.AudioStream.Position;
+                currentsound.MarkB = MarkB;
                 timeline.B = timeline.Value;
                 timeline.Refresh();
             }
@@ -453,17 +458,17 @@ namespace AudioSpamer2
         {
             if (currentsound != null)
             {
-                if (currentsound.playMarks)
+                if (currentsound.IsPlayingBetweenMarks)
                 {
                     btnPlayAToB.Text = "Play A-B";
-                    currentsound.StopPlayingMarks();
+                    currentsound.StopPlayingBetweenMarks();
                 }
                 else
                 {
                     btnPlayAToB.Text = "Stop A-B";
-                    currentsound.A = MarkA;
-                    currentsound.B = MarkB;
-                    currentsound.PlayMarks();
+                    currentsound.MarkA = MarkA;
+                    currentsound.MarkB = MarkB;
+                    currentsound.PlayBetweenMarks();
                 }
             }
         }

@@ -8,7 +8,7 @@ namespace AudioSpamer2.Effects
 {
     public abstract class AudioEffect
     {
-        public abstract void ApplyToSoundFile(SoundFile sf);
+        public abstract void ApplyToSoundFile(AudioClip sf);
         public abstract void RemoveFromSoundFile();
         public abstract void Update();
         public abstract string Name

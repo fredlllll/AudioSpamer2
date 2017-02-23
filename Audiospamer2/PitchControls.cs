@@ -148,9 +148,9 @@ namespace AudioSpamer2
             this.Height = 20 + (count + 1) * 45;
         }
 
-        SoundChannel sc;
+        AudioStream sc;
 
-        public void SetSoundChannel(SoundChannel sc = null)
+        public void SetSoundChannel(AudioStream sc = null)
         {
             this.sc = sc;
             Apply();

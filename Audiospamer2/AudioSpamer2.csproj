@@ -56,6 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AudioSpamerCore.cs" />
     <Compile Include="EffectsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -102,8 +103,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="ReplayMic.cs" />
-    <Compile Include="SoundChannel.cs" />
-    <Compile Include="SoundFile.cs" />
+    <Compile Include="AudioStream.cs" />
+    <Compile Include="AudioClip.cs" />
     <Compile Include="StartOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
