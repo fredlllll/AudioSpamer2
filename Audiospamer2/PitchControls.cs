@@ -150,7 +150,7 @@ namespace AudioSpamer2
 
         AudioStream sc;
 
-        public void SetSoundChannel(AudioStream sc = null)
+        public void SetAudioChannel(AudioStream sc = null)
         {
             this.sc = sc;
             Apply();

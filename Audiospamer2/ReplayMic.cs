@@ -48,7 +48,7 @@ namespace AudioSpamer2
             set { Bass.BASS_ChannelSetAttribute(PlayID, BASSAttribute.BASS_ATTRIB_VOL, value); }
         }
 
-        public AudioStream SoundChannel
+        public AudioStream AudioChannel
         {
             get { return new AudioStream(PlayID); }
         }

@@ -13,11 +13,9 @@ namespace AudioSpamer2
 {
     public partial class MainForm : Form
     {
-        const string bassRegMail = "frederik.gelder@freenet.de";
-        const string bassRegCode = "2X16373726163723";
         StartOptions spamerStartOptions;
-
-        ReplayMic replayMic;
+        EffectsControl effects;
+        
 
         public AudioSpamerCore AudioSpamerCore
         {
@@ -31,14 +29,13 @@ namespace AudioSpamer2
         IniFile ini;
         System.Timers.Timer barUpdater = new System.Timers.Timer(100);
 
-        EffectsControl effects;
+        
         public MainForm(bool initialMode,IniFile ini)
         {
             this.ini = ini;
             this.initialMode = initialMode;
             this.FormClosing += new FormClosingEventHandler(Form1_FormClosing);
 
-            BassNet.Registration(bassRegMail, bassRegCode);
             InitializeComponent();
             if (System.IO.File.Exists("listbg.png"))
             {
@@ -92,8 +89,8 @@ namespace AudioSpamer2
             }
 
             Bass.BASS_Init(spamerStartOptions.SelectedOutput, Global.DefaultSampleRate, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
-            replayMic = new ReplayMic(spamerStartOptions.SelectedInput);
-            pitchControlsMicrophone.SetSoundChannel(replayMic.SoundChannel);
+            AudioSpamerCore.InitMicrophone(spamerStartOptions.SelectedInput);
+            pitchControlsMicrophone.SetAudioChannel(AudioSpamerCore.ReplayMic.AudioChannel);
             pitchControlsMicrophone.trackBar1.Minimum = 100;
 
             //ini input from here
@@ -143,12 +140,12 @@ namespace AudioSpamer2
                 //dont care if it doesnt exists. listview will just stay empty
             }
 
-            apply();
+            ApplyVolumes();
             effects.BringToFront();
             effects.Left = ClientSize.Width;
         }
 
-        void apply()
+        void ApplyVolumes()
         {
             volumeMicrophone_Scroll(null, null);
             volumeSpam_Scroll(null, null);
@@ -258,18 +255,18 @@ namespace AudioSpamer2
 
             Bass.BASS_Free();
             Global.OutputDeviceIndex = spamerStartOptions.SelectedOutput;
-            Bass.BASS_Init(Global.OutputDeviceIndex, Global.DefaultSampleRate, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
-            replayMic.STOP();
+            AudioSpamerCore.InitializeOutputDevice(Global.OutputDeviceIndex, Global.DefaultSampleRate);
+            AudioSpamerCore.ReplayMic.STOP();
             Global.InputDeviceIndex = spamerStartOptions.SelectedInput;
-            replayMic = new ReplayMic(Global.InputDeviceIndex);
-            pitchControlsMicrophone.SetSoundChannel(replayMic.SoundChannel);
+            AudioSpamerCore.InitMicrophone(Global.InputDeviceIndex);
+            pitchControlsMicrophone.SetAudioChannel(AudioSpamerCore.ReplayMic.AudioChannel);
 
             if (currentsound != null)
             {
                 SetCurrentSound(new AudioClip(currentsound.Path), pos);
             }
 
-            apply();
+            ApplyVolumes();
         }
 
         private void btnSoundOptions_Click(object sender, EventArgs e)
@@ -280,7 +277,7 @@ namespace AudioSpamer2
         private void volumeMicrophone_Scroll(object sender, ScrollEventArgs e)
         {
             ini.SetProperty("InputVolume", volumeMicrophone.Value.ToString());
-            replayMic.Volume = volumeMicrophone.Value / 100.0f;
+            AudioSpamerCore.ReplayMic.Volume = volumeMicrophone.Value / 100.0f;
         }
 
         private void volumeSpam_Scroll(object sender, ScrollEventArgs e)
@@ -376,7 +373,7 @@ namespace AudioSpamer2
             currentsound = file;
             handler = new AudioClip.AudioChannelChangedHandler(currentsound_SoundChannelChanged);
             currentsound.AudioStreamChanged += handler;
-            pitchControlsSpam.SetSoundChannel(currentsound.AudioStream);
+            pitchControlsSpam.SetAudioChannel(currentsound.AudioStream);
             volumeSpam_Scroll(null, null);
             buttonPlayPause_Click(null, null);
 
@@ -420,7 +417,7 @@ namespace AudioSpamer2
 
         void currentsound_SoundChannelChanged(AudioStream c)
         {
-            pitchControlsSpam.SetSoundChannel(c);
+            pitchControlsSpam.SetAudioChannel(c);
         }
 
         private void btnReverse_Click(object sender, EventArgs e)

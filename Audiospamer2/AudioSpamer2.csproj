@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AudioSpamerCore.cs" />
+    <Compile Include="BassLibrary.cs" />
     <Compile Include="EffectsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
