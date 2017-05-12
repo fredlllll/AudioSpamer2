@@ -47,6 +47,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Bass24.Net\Bass.Net.dll</HintPath>
     </Reference>
+    <Reference Include="Codolith.Config">
+      <HintPath>..\..\Codolith.NetLib\Codolith.Config\bin\Release\Codolith.Config.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -58,6 +61,12 @@
   <ItemGroup>
     <Compile Include="AudioSpamerCore.cs" />
     <Compile Include="BassLibrary.cs" />
+    <Compile Include="Controls\NamedVolumeController.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\NamedVolumeController.Designer.cs">
+      <DependentUpon>NamedVolumeController.cs</DependentUpon>
+    </Compile>
     <Compile Include="EffectsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -115,6 +124,9 @@
     <Compile Include="TrackBarWithAB.cs">
       <SubType>Component</SubType>
     </Compile>
+    <EmbeddedResource Include="Controls\NamedVolumeController.resx">
+      <DependentUpon>NamedVolumeController.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="EffectsControl.resx">
       <DependentUpon>EffectsControl.cs</DependentUpon>
     </EmbeddedResource>

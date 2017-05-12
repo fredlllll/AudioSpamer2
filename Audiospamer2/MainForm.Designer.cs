@@ -30,10 +30,6 @@ namespace AudioSpamer2
         private void InitializeComponent()
         {
             this.btnSoundOptions = new System.Windows.Forms.Button();
-            this.volumeMicrophone = new System.Windows.Forms.HScrollBar();
-            this.lblMicrophoneVolume = new System.Windows.Forms.Label();
-            this.lblSpamVolume = new System.Windows.Forms.Label();
-            this.volumeSpam = new System.Windows.Forms.HScrollBar();
             this.label4 = new System.Windows.Forms.Label();
             this.grpMicrophone = new System.Windows.Forms.GroupBox();
             this.pitchControlsMicrophone = new AudioSpamer2.PitchControls();
@@ -48,58 +44,32 @@ namespace AudioSpamer2
             this.btnPlayPause = new System.Windows.Forms.Button();
             this.btnEffects = new System.Windows.Forms.Button();
             this.chkLoop = new System.Windows.Forms.CheckBox();
+            this.topPanel = new System.Windows.Forms.Panel();
+            this.volumeControls = new System.Windows.Forms.SplitContainer();
+            this.volumeSpam = new AudioSpamer2.Controls.NamedVolumeController();
+            this.volumeMicrophone = new AudioSpamer2.Controls.NamedVolumeController();
             this.timeline = new AudioSpamer2.TrackBarWithAB();
             this.pitchControlsSpam = new AudioSpamer2.PitchControls();
             this.grpMicrophone.SuspendLayout();
+            this.topPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.volumeControls)).BeginInit();
+            this.volumeControls.Panel1.SuspendLayout();
+            this.volumeControls.Panel2.SuspendLayout();
+            this.volumeControls.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.timeline)).BeginInit();
             this.SuspendLayout();
             // 
             // btnSoundOptions
             // 
-            this.btnSoundOptions.Location = new System.Drawing.Point(0, 0);
+            this.btnSoundOptions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnSoundOptions.Location = new System.Drawing.Point(3, 3);
             this.btnSoundOptions.Name = "btnSoundOptions";
             this.btnSoundOptions.Size = new System.Drawing.Size(83, 26);
             this.btnSoundOptions.TabIndex = 1;
             this.btnSoundOptions.Text = "Soundoptions";
             this.btnSoundOptions.UseVisualStyleBackColor = true;
             this.btnSoundOptions.Click += new System.EventHandler(this.btnSoundOptions_Click);
-            // 
-            // volumeMicrophone
-            // 
-            this.volumeMicrophone.Location = new System.Drawing.Point(196, 7);
-            this.volumeMicrophone.Maximum = 109;
-            this.volumeMicrophone.Name = "volumeMicrophone";
-            this.volumeMicrophone.Size = new System.Drawing.Size(149, 16);
-            this.volumeMicrophone.TabIndex = 3;
-            this.volumeMicrophone.Scroll += new System.Windows.Forms.ScrollEventHandler(this.volumeMicrophone_Scroll);
-            // 
-            // lblMicrophoneVolume
-            // 
-            this.lblMicrophoneVolume.AutoSize = true;
-            this.lblMicrophoneVolume.Location = new System.Drawing.Point(89, 7);
-            this.lblMicrophoneVolume.Name = "lblMicrophoneVolume";
-            this.lblMicrophoneVolume.Size = new System.Drawing.Size(104, 13);
-            this.lblMicrophoneVolume.TabIndex = 4;
-            this.lblMicrophoneVolume.Text = "Microphone Volume:";
-            // 
-            // lblSpamVolume
-            // 
-            this.lblSpamVolume.AutoSize = true;
-            this.lblSpamVolume.Location = new System.Drawing.Point(466, 7);
-            this.lblSpamVolume.Name = "lblSpamVolume";
-            this.lblSpamVolume.Size = new System.Drawing.Size(75, 13);
-            this.lblSpamVolume.TabIndex = 5;
-            this.lblSpamVolume.Text = "Spam Volume:";
-            // 
-            // volumeSpam
-            // 
-            this.volumeSpam.Location = new System.Drawing.Point(544, 7);
-            this.volumeSpam.Maximum = 109;
-            this.volumeSpam.Name = "volumeSpam";
-            this.volumeSpam.Size = new System.Drawing.Size(149, 16);
-            this.volumeSpam.TabIndex = 6;
-            this.volumeSpam.Value = 100;
-            this.volumeSpam.Scroll += new System.Windows.Forms.ScrollEventHandler(this.volumeSpam_Scroll);
             // 
             // label4
             // 
@@ -149,7 +119,9 @@ namespace AudioSpamer2
             // 
             // btnAddNewSpam
             // 
-            this.btnAddNewSpam.Location = new System.Drawing.Point(358, 0);
+            this.btnAddNewSpam.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAddNewSpam.Location = new System.Drawing.Point(840, 3);
             this.btnAddNewSpam.Name = "btnAddNewSpam";
             this.btnAddNewSpam.Size = new System.Drawing.Size(102, 26);
             this.btnAddNewSpam.TabIndex = 13;
@@ -159,7 +131,9 @@ namespace AudioSpamer2
             // 
             // btnRemoveSelectedSpam
             // 
-            this.btnRemoveSelectedSpam.Location = new System.Drawing.Point(696, 0);
+            this.btnRemoveSelectedSpam.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRemoveSelectedSpam.Location = new System.Drawing.Point(724, 3);
             this.btnRemoveSelectedSpam.Name = "btnRemoveSelectedSpam";
             this.btnRemoveSelectedSpam.Size = new System.Drawing.Size(110, 26);
             this.btnRemoveSelectedSpam.TabIndex = 14;
@@ -246,6 +220,59 @@ namespace AudioSpamer2
             this.chkLoop.UseVisualStyleBackColor = true;
             this.chkLoop.CheckedChanged += new System.EventHandler(this.chkLoop_CheckedChanged);
             // 
+            // topPanel
+            // 
+            this.topPanel.Controls.Add(this.volumeControls);
+            this.topPanel.Controls.Add(this.btnSoundOptions);
+            this.topPanel.Controls.Add(this.btnAddNewSpam);
+            this.topPanel.Controls.Add(this.btnRemoveSelectedSpam);
+            this.topPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.topPanel.Location = new System.Drawing.Point(0, 0);
+            this.topPanel.Name = "topPanel";
+            this.topPanel.Size = new System.Drawing.Size(945, 32);
+            this.topPanel.TabIndex = 23;
+            // 
+            // volumeControls
+            // 
+            this.volumeControls.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.volumeControls.Location = new System.Drawing.Point(92, 0);
+            this.volumeControls.Name = "volumeControls";
+            // 
+            // volumeControls.Panel1
+            // 
+            this.volumeControls.Panel1.Controls.Add(this.volumeMicrophone);
+            // 
+            // volumeControls.Panel2
+            // 
+            this.volumeControls.Panel2.Controls.Add(this.volumeSpam);
+            this.volumeControls.Size = new System.Drawing.Size(626, 32);
+            this.volumeControls.SplitterDistance = 309;
+            this.volumeControls.TabIndex = 17;
+            // 
+            // volumeSpam
+            // 
+            this.volumeSpam.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.volumeSpam.Label = "Spam Volume";
+            this.volumeSpam.Location = new System.Drawing.Point(0, 0);
+            this.volumeSpam.MinimumSize = new System.Drawing.Size(77, 0);
+            this.volumeSpam.Name = "volumeSpam";
+            this.volumeSpam.Size = new System.Drawing.Size(313, 32);
+            this.volumeSpam.TabIndex = 16;
+            this.volumeSpam.Value = 0.5F;
+            // 
+            // volumeMicrophone
+            // 
+            this.volumeMicrophone.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.volumeMicrophone.Label = "Microphone Volume";
+            this.volumeMicrophone.Location = new System.Drawing.Point(0, 0);
+            this.volumeMicrophone.MinimumSize = new System.Drawing.Size(106, 0);
+            this.volumeMicrophone.Name = "volumeMicrophone";
+            this.volumeMicrophone.Size = new System.Drawing.Size(309, 32);
+            this.volumeMicrophone.TabIndex = 15;
+            this.volumeMicrophone.Value = 0.5F;
+            // 
             // timeline
             // 
             this.timeline.A = 0;
@@ -267,11 +294,12 @@ namespace AudioSpamer2
             this.pitchControlsSpam.TabIndex = 8;
             this.pitchControlsSpam.TempoEnabled = true;
             // 
-            // Form1
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(815, 518);
+            this.ClientSize = new System.Drawing.Size(945, 563);
+            this.Controls.Add(this.topPanel);
             this.Controls.Add(this.chkLoop);
             this.Controls.Add(this.btnEffects);
             this.Controls.Add(this.timeline);
@@ -280,22 +308,20 @@ namespace AudioSpamer2
             this.Controls.Add(this.btnSetB);
             this.Controls.Add(this.btnSetA);
             this.Controls.Add(this.btnReverse);
-            this.Controls.Add(this.btnRemoveSelectedSpam);
-            this.Controls.Add(this.btnAddNewSpam);
             this.Controls.Add(this.lstSpams);
             this.Controls.Add(this.grpMicrophone);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.pitchControlsSpam);
-            this.Controls.Add(this.volumeSpam);
-            this.Controls.Add(this.lblSpamVolume);
-            this.Controls.Add(this.lblMicrophoneVolume);
-            this.Controls.Add(this.volumeMicrophone);
-            this.Controls.Add(this.btnSoundOptions);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "Audiospamer Version 2";
             this.grpMicrophone.ResumeLayout(false);
+            this.topPanel.ResumeLayout(false);
+            this.volumeControls.Panel1.ResumeLayout(false);
+            this.volumeControls.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.volumeControls)).EndInit();
+            this.volumeControls.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.timeline)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -304,10 +330,6 @@ namespace AudioSpamer2
 
         #endregion
         private System.Windows.Forms.Button btnSoundOptions;
-        private System.Windows.Forms.HScrollBar volumeMicrophone;
-        private System.Windows.Forms.Label lblMicrophoneVolume;
-        private System.Windows.Forms.Label lblSpamVolume;
-        private System.Windows.Forms.HScrollBar volumeSpam;
         private PitchControls pitchControlsMicrophone;
         private PitchControls pitchControlsSpam;
         private System.Windows.Forms.Label label4;
@@ -324,7 +346,10 @@ namespace AudioSpamer2
         private TrackBarWithAB timeline;
         private System.Windows.Forms.Button btnEffects;
         private System.Windows.Forms.CheckBox chkLoop;
-
+        private System.Windows.Forms.Panel topPanel;
+        private Controls.NamedVolumeController volumeMicrophone;
+        private Controls.NamedVolumeController volumeSpam;
+        private System.Windows.Forms.SplitContainer volumeControls;
     }
 }
 

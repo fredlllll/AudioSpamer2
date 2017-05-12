@@ -52,15 +52,15 @@ namespace AudioSpamer2.Effects
         [EffectPropertyDescription("Level", 0, 100, 0)]
         public float Level
         {
-            get { return reverb.fLevel; }
-            set { reverb.fLevel = value; Update(); }
+            get { return 0; }//reverb.fLevel; }
+            set { }//reverb.fLevel = value; Update(); }
         }
 
         [EffectPropertyDescription("Delay", 1200, 30000, 1200, 1, true)]
         public int Delay
         {
-            get { return reverb.lDelay; }
-            set { reverb.lDelay = value; Update(); }
+            get { return 0; }// reverb.lDelay; }
+            set { }//reverb.lDelay = value; Update(); }
         }
 
         public override string Name

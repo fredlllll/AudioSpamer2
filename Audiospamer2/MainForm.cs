@@ -26,17 +26,15 @@ namespace AudioSpamer2
         public AudioClip currentsound = null;
 
         Size oldsize;
-        IniFile ini;
         System.Timers.Timer barUpdater = new System.Timers.Timer(100);
 
         
-        public MainForm(bool initialMode,IniFile ini)
+        public MainForm()
         {
-            this.ini = ini;
-            this.initialMode = initialMode;
+            InitializeComponent();
+
             this.FormClosing += new FormClosingEventHandler(Form1_FormClosing);
 
-            InitializeComponent();
             if (System.IO.File.Exists("listbg.png"))
             {
                 this.lstSpams.BackgroundImage = new Bitmap("listbg.png");
@@ -59,26 +57,14 @@ namespace AudioSpamer2
             this.Controls.Add(effects);
 
 
-            this.spamerStartOptions = new AudioSpamer2.StartOptions(ini);
-            // 
-            // StartOptions1
-            // 
-            this.spamerStartOptions.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.spamerStartOptions.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.spamerStartOptions.Location = new System.Drawing.Point(0, 0);
-            this.spamerStartOptions.Margin = new System.Windows.Forms.Padding(1);
-            this.spamerStartOptions.Name = "StartOptions1";
-            this.spamerStartOptions.Size = new System.Drawing.Size(600, 25);
-            this.spamerStartOptions.TabIndex = 0;
-            this.spamerStartOptions.OKClick += new AudioSpamer2.StartOptions.voidHandler(this.StartOptions1_OKClick);
-            this.spamerStartOptions.TotallyHidden += new StartOptions.voidHandler(StartOptions1_TotallyHidden);
-            this.Controls.Add(this.spamerStartOptions);
-            spamerStartOptions.BringToFront();
+            
             resizeTimer.Elapsed += new System.Timers.ElapsedEventHandler(resizeTimer_Elapsed);
             this.Resize += new EventHandler(Form1_Resize);
 
-            if (initialMode)
+            if (Program.Config.Get<bool>("firstLaunch",true))
             {
+                Program.Config.Set("firstLaunch", false);
+                Program.Config.Save();
                 oldsize = this.ClientSize;
                 this.ClientSize = spamerStartOptions.Size;
             }
@@ -94,24 +80,17 @@ namespace AudioSpamer2
             pitchControlsMicrophone.trackBar1.Minimum = 100;
 
             //ini input from here
-            int temp = 0;
-            if (!int.TryParse(ini.GetProperty("InputVolume"), out temp))
-            {
-                temp = 0;
-            }
-            volumeMicrophone.Value = temp;
-            if (!int.TryParse(ini.GetProperty("SpamVolume"), out temp))
-            {
-                temp = volumeSpam.Maximum-9;
-            }
-            volumeSpam.Value = temp;
+
+            volumeMicrophone.Value = Program.Config.Get<float>("MicrophoneVolume", 1);
+            volumeSpam.Value = (int)Program.Config.Get<float>("SpamVolume", 1);
 
             //rest
             barUpdater.Elapsed += new System.Timers.ElapsedEventHandler(barUpdater_Elapsed);
             barUpdater.Start();
 
-            pitchControlsMicrophone.LoadFrom(ini);
-            pitchControlsSpam.LoadFrom(ini);
+            //TODO:replace with config
+            //pitchControlsMicrophone.LoadFrom(ini);
+            //pitchControlsSpam.LoadFrom(ini);
 
             try
             {
@@ -143,6 +122,25 @@ namespace AudioSpamer2
             ApplyVolumes();
             effects.BringToFront();
             effects.Left = ClientSize.Width;
+        }
+
+        void AddStartOptions()
+        {
+            this.spamerStartOptions = new AudioSpamer2.StartOptions();
+            // 
+            // StartOptions1
+            // 
+            this.spamerStartOptions.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.spamerStartOptions.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.spamerStartOptions.Location = new System.Drawing.Point(0, 0);
+            this.spamerStartOptions.Margin = new System.Windows.Forms.Padding(1);
+            this.spamerStartOptions.Name = "StartOptions1";
+            this.spamerStartOptions.Size = new System.Drawing.Size(600, 25);
+            this.spamerStartOptions.TabIndex = 0;
+            this.spamerStartOptions.OKClick += new AudioSpamer2.StartOptions.voidHandler(this.StartOptions1_OKClick);
+            this.spamerStartOptions.TotallyHidden += new StartOptions.voidHandler(StartOptions1_TotallyHidden);
+            this.Controls.Add(this.spamerStartOptions);
+            spamerStartOptions.BringToFront();
         }
 
         void ApplyVolumes()
@@ -181,8 +179,9 @@ namespace AudioSpamer2
 
         void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            pitchControlsMicrophone.Save(ini);
-            pitchControlsSpam.Save(ini);
+            //TODO: save to config
+            //pitchControlsMicrophone.Save(ini);
+            //pitchControlsSpam.Save(ini);
 
             //save list
             
@@ -197,7 +196,7 @@ namespace AudioSpamer2
             }
             sw.Close();
 
-            ini.Flush();
+            Program.Config.Save();
         }
 
         void Form1_Resize(object sender, EventArgs e)
@@ -218,13 +217,14 @@ namespace AudioSpamer2
                 return;
             }
         }
-        bool initialMode;
+
         System.Timers.Timer resizeTimer = new System.Timers.Timer(10);
         float fHeight, fWidth;
         float hmod, wmod;
         void StartOptions1_TotallyHidden()
         {
-            if (initialMode)
+            //TODO: find out what this did
+            /*if (initialMode)
             {
                 initialMode = false;
                 fHeight = this.ClientSize.Height;
@@ -232,20 +232,20 @@ namespace AudioSpamer2
                 hmod = Math.Abs(oldsize.Height - fHeight)/75.0f;
                 wmod = Math.Abs(oldsize.Width - fWidth) / 75.0f;
                 resizeTimer.Start();
-            }
+            }*/
         }
 
         void StartOptions1_OKClick()
         {
             if (spamerStartOptions.micbox.SelectedItem != null)
             {
-                ini.SetProperty("Input", spamerStartOptions.micbox.SelectedItem.ToString());
+                Program.Config.Set("Input", spamerStartOptions.micbox.SelectedItem.ToString());
             }
             if (spamerStartOptions.soundbox.SelectedItem != null)
             {
-                ini.SetProperty("Output", spamerStartOptions.soundbox.SelectedItem.ToString());
+                Program.Config.Set("Output", spamerStartOptions.soundbox.SelectedItem.ToString());
             }
-            ini.Flush();
+            Program.Config.Save();
 
             long pos = 0;
             if (currentsound != null)
@@ -276,16 +276,16 @@ namespace AudioSpamer2
 
         private void volumeMicrophone_Scroll(object sender, ScrollEventArgs e)
         {
-            ini.SetProperty("InputVolume", volumeMicrophone.Value.ToString());
-            AudioSpamerCore.ReplayMic.Volume = volumeMicrophone.Value / 100.0f;
+            Program.Config.Set("MicrophoneVolume", volumeMicrophone.Value);
+            AudioSpamerCore.ReplayMic.Volume = volumeMicrophone.Value;
         }
 
         private void volumeSpam_Scroll(object sender, ScrollEventArgs e)
         {
-            ini.SetProperty("SpamVolume", volumeSpam.Value.ToString());
+            Program.Config.Set("SpamVolume", volumeSpam.Value);
             if (currentsound != null)
             {
-                currentsound.AudioStream.Volume = volumeSpam.Value / 100.0f;
+                currentsound.AudioStream.Volume = volumeSpam.Value;
             }
         }
 

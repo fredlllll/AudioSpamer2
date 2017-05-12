@@ -13,17 +13,17 @@ namespace AudioSpamer2
     {
         public BASS_DEVICEINFO[] InputDevices;
         public BASS_DEVICEINFO[] OutputDevices;
-        public StartOptions(IniFile ini)
+        public StartOptions()
         {
             InitializeComponent();
             InputDevices = Bass.BASS_RecordGetDeviceInfos();
             OutputDevices = Bass.BASS_GetDeviceInfos();
             int indextoselect = 0;
-            String comparer = ini.GetProperty("Input");
+            String value = Program.Config.Get("Input");
             for (int i = 0; i < InputDevices.Length; i++)
             {
                 micbox.Items.Add(InputDevices[i]);
-                if (InputDevices[i].ToString().Equals(comparer))
+                if (InputDevices[i].ToString().Equals(value))
                 {
                     indextoselect = i;
                 }
@@ -32,11 +32,11 @@ namespace AudioSpamer2
             {
                 micbox.SelectedIndex = indextoselect;
             }
-            comparer = ini.GetProperty("Output");
+            value = Program.Config.Get("Output");
             for (int i = 0; i < OutputDevices.Length; i++)
             {
                 soundbox.Items.Add(OutputDevices[i]);
-                if (OutputDevices[i].ToString().Equals(comparer))
+                if (OutputDevices[i].ToString().Equals(value))
                 {
                     indextoselect = i;
                 }
